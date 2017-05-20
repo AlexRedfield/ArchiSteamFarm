@@ -107,15 +107,6 @@ namespace ArchiSteamFarm {
 		[JsonProperty(Required = Required.DisallowNull)]
 		internal readonly EUpdateChannel UpdateChannel = EUpdateChannel.Stable;
 
-		[JsonProperty(Required = Required.DisallowNull)]
-		internal readonly EWCFBinding WCFBinding = EWCFBinding.NetTcp;
-
-		[JsonProperty(Required = Required.DisallowNull)]
-		internal readonly ushort WCFPort = DefaultWCFPort;
-
-		[JsonProperty]
-		internal string WCFHost { get; set; } = "127.0.0.1";
-
 		// This constructor is used only by deserializer
 		private GlobalConfig() { }
 
@@ -166,16 +157,11 @@ namespace ArchiSteamFarm {
 				return null;
 			}
 
-			if (globalConfig.ConnectionTimeout == 0) {
-				ASF.ArchiLogger.LogGenericError(string.Format(Strings.ErrorConfigPropertyInvalid, nameof(globalConfig.ConnectionTimeout), globalConfig.ConnectionTimeout));
-				return null;
-			}
-
-			if (globalConfig.WCFPort != 0) {
+			if (globalConfig.ConnectionTimeout != 0) {
 				return globalConfig;
 			}
 
-			ASF.ArchiLogger.LogGenericError(string.Format(Strings.ErrorConfigPropertyInvalid, nameof(globalConfig.WCFPort), globalConfig.WCFPort));
+			ASF.ArchiLogger.LogGenericError(string.Format(Strings.ErrorConfigPropertyInvalid, nameof(globalConfig.ConnectionTimeout), globalConfig.ConnectionTimeout));
 			return null;
 		}
 
@@ -189,12 +175,6 @@ namespace ArchiSteamFarm {
 			None,
 			Stable,
 			Experimental
-		}
-
-		internal enum EWCFBinding : byte {
-			NetTcp,
-			BasicHttp,
-			WSHttp
 		}
 	}
 }

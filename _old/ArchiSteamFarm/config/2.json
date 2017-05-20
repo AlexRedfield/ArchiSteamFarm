@@ -1,0 +1,14 @@
+{
+  "Enabled": true,
+  "SteamLogin": "EPDL_STASH3",
+  "SteamPassword": "AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAV2vpR6dWrEy9tJj4aB63owAAAAACAAAAAAAQZgAAAAEAACAAAABP0Y/blhHKyGZZtmGCTyxxfhbe1/6WfW8A0/AXkaPQ/wAAAAAOgAAAAAIAACAAAACzH8Q73oqEaHMRCHjGqawchekww/DEHkEQsKW8myPw5SAAAACHtGzzUrErcc7GSfPiNi6cygfoY06lpoputVl9TBja1kAAAABjd6dBgfYjJZbQF26dTH9rqT+iI4BcRX4uvde5uVIGH1ZWuJCjKWdFU5ms2SG9Hvnn4kh0dpxcDekk5IV1D4Py",
+  "PasswordFormat": 2,
+  "SteamMasterID": 76561198069026042,
+  "AcceptGifts": true,
+  "IsBotAccount": true,
+  "SendOnFarmingFinished": true,
+  "DismissInventoryNotifications": true,
+  "SteamTradeToken": "Bf8tQUDx",
+  "FarmOffline": true,
+  "HandleOfflineMessages": true
+}

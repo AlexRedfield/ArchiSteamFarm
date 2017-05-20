@@ -37,7 +37,7 @@ namespace ArchiSteamFarm {
 	internal sealed class WebBrowser {
 		internal const byte MaxRetries = 5; // Defines maximum number of retries, UrlRequest() does not handle retry by itself (it's app responsibility)
 
-		private const byte MaxConnections = ServicePointManager.DefaultNonPersistentConnectionLimit; // Defines maximum number of connections per ServicePoint. Be careful, as it also defines maximum number of sockets in CLOSE_WAIT state
+		private const byte MaxConnections = 10; // Defines maximum number of connections per ServicePoint. Be careful, as it also defines maximum number of sockets in CLOSE_WAIT state
 		private const byte MaxIdleTime = 15; // In seconds, how long socket is allowed to stay in CLOSE_WAIT state after there are no connections to it
 
 		internal readonly CookieContainer CookieContainer = new CookieContainer();
@@ -49,8 +49,8 @@ namespace ArchiSteamFarm {
 			ArchiLogger = archiLogger ?? throw new ArgumentNullException(nameof(archiLogger));
 
 			HttpClientHandler httpClientHandler = new HttpClientHandler {
-				AutomaticDecompression = DecompressionMethods.Deflate | DecompressionMethods.GZip,
-				CookieContainer = CookieContainer
+				CookieContainer = CookieContainer,
+				MaxConnectionsPerServer = MaxConnections
 			};
 
 			HttpClient = new HttpClient(httpClientHandler) {
@@ -71,16 +71,8 @@ namespace ArchiSteamFarm {
 			// Don't use Expect100Continue, we're sure about our POSTs, save some TCP packets
 			ServicePointManager.Expect100Continue = false;
 
-#if !__MonoCS__
-			// We run Windows-compiled ASF on both Windows and Mono. Normally we'd simply put code in the if
-			// However, if we did that, then we would still crash on Mono due to potentially calling non-existing methods
-			// Therefore, call mono-incompatible options in their own function to avoid that, and just leave the function call here
-			// When compiling on Mono, this section is omitted entirely as we never run Mono-compiled ASF on Windows
-			// Moreover, Mono compiler doesn't even include ReusePort field in ServicePointManager, so it's crucial to avoid compilation error
-			if (!Runtime.IsRunningOnMono) {
-				InitNonMonoBehaviour();
-			}
-#endif
+			// Reuse ports to keep number of opened sockets low
+			ServicePointManager.ReusePort = true;
 		}
 
 		internal static HtmlDocument StringToHtmlDocument(string html) {
@@ -239,7 +231,7 @@ namespace ArchiSteamFarm {
 			return null;
 		}
 
-		internal async Task<bool> UrlPost(string request, IEnumerable<KeyValuePair<string, string>> data = null, string referer = null) {
+		internal async Task<bool> UrlPost(string request, ICollection<KeyValuePair<string, string>> data = null, string referer = null) {
 			if (string.IsNullOrEmpty(request)) {
 				ArchiLogger.LogNullError(nameof(request));
 				return false;
@@ -303,10 +295,6 @@ namespace ArchiSteamFarm {
 				return default(T);
 			}
 		}
-
-#if !__MonoCS__
-		private static void InitNonMonoBehaviour() => ServicePointManager.ReusePort = true;
-#endif
 
 		private async Task<byte[]> UrlGetToBytes(string request, string referer = null) {
 			if (string.IsNullOrEmpty(request)) {
@@ -454,7 +442,7 @@ namespace ArchiSteamFarm {
 			}
 		}
 
-		private async Task<string> UrlPostToContent(string request, IEnumerable<KeyValuePair<string, string>> data = null, string referer = null) {
+		private async Task<string> UrlPostToContent(string request, ICollection<KeyValuePair<string, string>> data = null, string referer = null) {
 			if (string.IsNullOrEmpty(request)) {
 				ArchiLogger.LogNullError(nameof(request));
 				return null;
@@ -489,7 +477,7 @@ namespace ArchiSteamFarm {
 			return null;
 		}
 
-		private async Task<HttpResponseMessage> UrlPostToResponse(string request, IEnumerable<KeyValuePair<string, string>> data = null, string referer = null) {
+		private async Task<HttpResponseMessage> UrlPostToResponse(string request, ICollection<KeyValuePair<string, string>> data = null, string referer = null) {
 			if (!string.IsNullOrEmpty(request)) {
 				return await UrlRequest(request, HttpMethod.Post, data, referer).ConfigureAwait(false);
 			}
@@ -498,7 +486,7 @@ namespace ArchiSteamFarm {
 			return null;
 		}
 
-		private async Task<HttpResponseMessage> UrlRequest(string request, HttpMethod httpMethod, IEnumerable<KeyValuePair<string, string>> data = null, string referer = null) {
+		private async Task<HttpResponseMessage> UrlRequest(string request, HttpMethod httpMethod, ICollection<KeyValuePair<string, string>> data = null, string referer = null, byte maxRedirections = MaxRetries) {
 			if (string.IsNullOrEmpty(request) || (httpMethod == null)) {
 				ArchiLogger.LogNullError(nameof(request) + " || " + nameof(httpMethod));
 				return null;
@@ -537,6 +525,15 @@ namespace ArchiSteamFarm {
 
 			if (responseMessage.IsSuccessStatusCode) {
 				return responseMessage;
+			}
+
+			if ((responseMessage.StatusCode == HttpStatusCode.Redirect) && (maxRedirections > 0)) {
+				ArchiLogger.LogGenericDebug("TODO: Handling insecure redirection");
+
+				string location = responseMessage.Headers.Location.ToString();
+				responseMessage.Dispose();
+
+				return await UrlRequest(location, httpMethod, data, referer, --maxRedirections).ConfigureAwait(false);
 			}
 
 			if (Debugging.IsUserDebugging) {

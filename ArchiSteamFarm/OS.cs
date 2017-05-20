@@ -25,7 +25,6 @@
 using System;
 using System.Runtime.InteropServices;
 using ArchiSteamFarm.Localization;
-using Microsoft.Win32;
 
 namespace ArchiSteamFarm {
 	internal static class OS {
@@ -46,7 +45,8 @@ namespace ArchiSteamFarm {
 					break;
 			}
 
-			SystemEvents.TimeChanged += OnTimeChanged;
+			// TODO: Can we by any chance implement this on .NET core?
+			//SystemEvents.TimeChanged += OnTimeChanged;
 		}
 
 		private static void DisableQuickEditMode() {
@@ -77,7 +77,7 @@ namespace ArchiSteamFarm {
 			}
 		}
 
-		private static async void OnTimeChanged(object sender, EventArgs e) => await MobileAuthenticator.OnTimeChanged().ConfigureAwait(false);
+		//private static async void OnTimeChanged(object sender, EventArgs e) => await MobileAuthenticator.OnTimeChanged().ConfigureAwait(false);
 
 		private static class NativeMethods {
 			internal const uint EnableQuickEditMode = 0x0040;

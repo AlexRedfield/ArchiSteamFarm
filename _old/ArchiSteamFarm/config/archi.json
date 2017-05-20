@@ -1,0 +1,30 @@
+{
+  "AcceptGifts": false,
+  "CardDropsRestricted": false,
+  "CustomGamePlayedWhileFarming": null,
+  "CustomGamePlayedWhileIdle": null,
+  "DismissInventoryNotifications": true,
+  "Enabled": false,
+  "FarmingOrder": 0,
+  "FarmOffline": true,
+  "GamesPlayedWhileIdle": [],
+  "HandleOfflineMessages": false,
+  "IsBotAccount": false,
+  "LootableTypes": [
+    1,
+    5
+  ],
+  "PasswordFormat": 2,
+  "Paused": false,
+  "RedeemingPreferences": 1,
+  "SendOnFarmingFinished": false,
+  "SendTradePeriod": 0,
+  "ShutdownOnFarmingFinished": false,
+  "SteamLogin": "archi_pl",
+  "SteamMasterClanID": 0,
+  "SteamParentalPIN": "0",
+  "SteamPassword": "AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAV2vpR6dWrEy9tJj4aB63owAAAAACAAAAAAAQZgAAAAEAACAAAABUmqeL0ZO9lsSyB6nhPTHp7QbbvmNTSYTh0I7cm3PepwAAAAAOgAAAAAIAACAAAADIOc26f+gJzZ47cFUY9h3sWmu5bb7MlyLS/16HWukcRBAAAACcK54gLJy2Z0kuwLykckVWQAAAAI9tOcpreaOVWiFNODTMYCwXe5iS3UOeAPdm7p1wL2NKUxH2A2wEVXIy4m75Y/67fNWYysBpeltFkq9krK4LtJI=",
+  "SteamTradeToken": null,
+  "SteamUserPermissions": {},
+  "TradingPreferences": 3
+}
